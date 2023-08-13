@@ -7,7 +7,7 @@ module filteriir(clk,rst,x1,y);
   wire [15:0]m11,m12,m13,m14,m15;
   wire [15:0]d111,d112,d113,d114;
   
- wire [15:0]do11,do12,do13;
+  wire [15:0]do11,do12,do13;
   wire [15:0]ee12,ee13,ee14,ee15;
   wire [15:0]e111,e112,e113,e114;
   
