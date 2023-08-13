@@ -1,0 +1,128 @@
+module filteriir(clk,rst,x1,y);
+  input [15:0]x1;
+  input clk,rst;
+  output [15:0]y;
+  wire [15:0]dataout1;
+  wire [15:0]d11,d12,d13;
+  wire [15:0]m11,m12,m13,m14,m15;
+  wire [15:0]d111,d112,d113,d114;
+  
+ wire [15:0]do11,do12,do13;
+  wire [15:0]ee12,ee13,ee14,ee15;
+  wire [15:0]e111,e112,e113,e114;
+  
+  
+  parameter h10=16'b0000000000000001;  //parametr replacd by reg
+parameter h11=16'b0000000000000001;
+parameter h12=16'b0000000000000001;
+parameter h13=16'b0000000000000001;
+parameter h14=16'b0000000000000001;
+
+
+ //parametr replacd by reg
+parameter e11=16'b0000000000000001;
+parameter e12=16'b0000000000000001;
+parameter e13=16'b0000000000000001;
+parameter e14=16'b0000000000000001;
+
+//assign m11=x1*h10;         //always@(*) 
+mul g1(x1,h10,m11);     
+dff u12(clk,rst,x1,d111);
+//assign m12=d111*h11;
+mul g2(d111,h11,m12);
+assign d11=m11+m12;
+
+dff u14(clk,rst,d111,d112);
+//assign m13=d112*h12;
+mul g3(d112,h12,m13);
+assign d12=d11+m13;
+
+dff u16(clk,rst,d112,d113);
+//assign m14=d113*h13;
+mul g4(d113,h13,m14);
+assign d13=d12+m14;
+
+dff u18(clk,rst,d113,d114);
+//assign m15=d114*h14;
+mul g5(d114,h14,m15);
+assign dataout1=d13+m15;
+
+
+
+
+
+//assign m11=x1*h10;         //always@(*)      
+dff u19(clk,rst,dataout1,e111);
+assign ee12=e111*e11;
+
+assign do11=e111+ee12;
+
+dff u20(clk,rst,e111,e112);
+assign ee13=e112*e12;
+assign do12=do11+ee13;
+
+dff u21(clk,rst,e112,e113);
+assign ee14=e113*e13;
+assign do13=e12+ee14;
+
+dff u22(clk,rst,e113,e114);
+assign ee15=e114*e14;
+assign y=do13+ee15;
+
+  
+
+  
+  
+  endmodule
+  
+  
+  
+  
+  module dff(clk,rst,d,q);// sub module d flipflop
+  input clk,rst;
+  input [15:0]d;
+  output [15:0]q;
+  reg [15:0]q;
+  always@(clk)
+  begin
+  if(rst==1)
+  begin
+  q=0;   //d11=0
+  end
+  else
+  begin
+  q=d;  //d111=x1;
+  end
+  end
+  
+  endmodule
+
+module mul(i1,i3,y);
+  input [15:0]i1,i3;
+  
+  output [31:0]y;
+  reg [31:0]y;
+  reg [31:0]r1,r2,r3,t1,t2,t3;
+  reg [31:0]z2,z1,z0;
+  always @(*)
+  begin
+    
+  t1=i1/4'b1000;
+ t2=t1*10'b1111101000;
+ t3=i1-t2;
+ 
+  r1=i3/4'b1000;
+ r2=r1*10'b1111101000;
+ r3=i3-r2;
+ 
+ z2=t1*r1;
+ z0=t3*r3;
+ z1=(t1+t3)*(r1+r3)-z2-z0;
+ 
+ y=z2*(20'b11110100001001000000)+z1*10'b1111101000+z0;
+ 
+  end
+  
+ 
+  
+endmodule  
