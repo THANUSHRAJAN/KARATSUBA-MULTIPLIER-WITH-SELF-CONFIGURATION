@@ -1,0 +1,733 @@
+module filteriir(clk,rst,x1,y);
+  input [15:0]x1;
+  input clk,rst;
+  output [15:0]y;
+  wire [15:0]dataout1;
+  wire [15:0]d11,d12,d13;
+  wire [15:0]m11,m12,m13,m14,m15;
+  wire [15:0]d111,d112,d113,d114;
+  
+ wire [15:0]do11,do12,do13;
+  wire [15:0]ee12,ee13,ee14,ee15;
+  wire [15:0]e111,e112,e113,e114;
+  
+  
+  parameter h10=16'b0000000000000001;  //parametr replacd by reg
+parameter h11=16'b0000000000000001;
+parameter h12=16'b0000000000000001;
+parameter h13=16'b0000000000000001;
+parameter h14=16'b0000000000000001;
+
+
+ //parametr replacd by reg
+parameter e11=16'b0000000000000001;
+parameter e12=16'b0000000000000001;
+parameter e13=16'b0000000000000001;
+parameter e14=16'b0000000000000001;
+
+//assign m11=x1*h10;         //always@(*) 
+mul g1(x1,h10,m11);     
+dff u12(clk,rst,x1,d111);
+//assign m12=d111*h11;
+mul g2(d111,h11,m12);
+assign d11=m11+m12;
+
+dff u14(clk,rst,d111,d112);
+//assign m13=d112*h12;
+mul g3(d112,h12,m13);
+assign d12=d11+m13;
+
+dff u16(clk,rst,d112,d113);
+//assign m14=d113*h13;
+mul g4(d113,h13,m14);
+assign d13=d12+m14;
+
+dff u18(clk,rst,d113,d114);
+//assign m15=d114*h14;
+mul g5(d114,h14,m15);
+assign dataout1=d13+m15;
+
+
+
+
+
+//assign m11=x1*h10;         //always@(*)      
+dff u19(clk,rst,dataout1,e111);
+assign ee12=e111*e11;
+
+assign do11=e111+ee12;
+
+dff u20(clk,rst,e111,e112);
+assign ee13=e112*e12;
+assign do12=do11+ee13;
+
+dff u21(clk,rst,e112,e113);
+assign ee14=e113*e13;
+assign do13=e12+ee14;
+
+dff u22(clk,rst,e113,e114);
+assign ee15=e114*e14;
+assign y=do13+ee15;
+
+  
+
+  
+  
+  endmodule
+  
+  
+  
+  
+  module dff(clk,rst,d,q);// sub module d flipflop
+  input clk,rst;
+  input [15:0]d;
+  output [15:0]q;
+  reg [15:0]q;
+  always@(clk)
+  begin
+  if(rst==1)
+  begin
+  q=0;   //d11=0
+  end
+  else
+  begin
+  q=d;  //d111=x1;
+  end
+  end
+  
+  endmodule
+
+
+module mul(a,b,z);
+input [15:0]a,b;
+output [15:0]z;
+reg [31:0]z;
+reg [15:0]tem1,tem2;
+reg [15:-1]x,y;
+reg [15:0]u;
+integer t1,t2,t3,t4;
+integer t5,t6,t7,t8;
+
+
+reg [63:0]pp1,pp2,pp3,pp4;
+reg [63:0]pp5,pp6,pp7,pp8;
+
+
+
+
+reg [63:0]shift1,shift2,shift3;
+reg [63:0]shift4,shift5,shift6;
+reg [63:0]shift7;
+
+always @(*)
+begin
+
+tem1=a[15]^a[14]+a[13]^a[12]+a[11]^a[10]+a[9]^a[8]^a[7]^a[6]+a[5]^a[4]+a[3]^a[2]+a[1]^a[0];
+
+tem2=b[15]^b[14]+b[13]^b[12]+b[11]^b[10]+b[9]^b[8]^b[7]^b[6]+b[5]^b[4]+b[3]^b[2]+b[1]^b[0];
+
+
+if(tem1>tem2)
+begin
+
+x[-1]=0;
+x[0]=a[0];
+x[1]=a[1];
+x[2]=a[2];
+x[3]=a[3];
+x[4]=a[4];
+x[5]=a[5];
+x[6]=a[6];
+x[7]=a[7];
+
+x[8]=a[8];
+x[9]=a[9];
+x[10]=a[10];
+x[11]=a[11];
+x[12]=a[12];
+x[13]=a[13];
+x[14]=a[14];
+x[15]=a[15];
+
+y[-1]=0;
+y[0]=b[0];
+y[1]=b[1];
+y[2]=b[2];
+y[3]=b[3];
+y[4]=b[4];
+y[5]=b[5];
+y[6]=b[6];
+y[7]=b[7];
+
+
+y[8]=b[8];
+y[9]=b[9];
+y[10]=b[10];
+y[11]=b[11];
+y[12]=b[12];
+y[13]=b[13];
+y[14]=b[14];
+y[15]=b[15];
+
+
+end
+
+
+else
+begin
+
+x[-1]=0;
+x[0]=b[0];
+x[1]=b[1];
+x[2]=b[2];
+x[3]=b[3];
+x[4]=b[4];
+x[5]=b[5];
+x[6]=b[6];
+x[7]=b[7];
+
+x[8]=b[8];
+x[9]=b[9];
+x[10]=b[10];
+x[11]=b[11];
+x[12]=b[12];
+x[13]=b[13];
+x[14]=b[14];
+x[15]=b[15];
+
+y[-1]=0;
+y[0]=a[0];
+y[1]=a[1];
+y[2]=a[2];
+y[3]=a[3];
+y[4]=a[4];
+y[5]=a[5];
+y[6]=a[6];
+y[7]=a[7];
+
+
+y[8]=a[8];
+y[9]=a[9];
+y[10]=a[10];
+y[11]=a[11];
+y[12]=a[12];
+y[13]=a[13];
+y[14]=a[14];
+y[15]=a[15];
+
+
+end
+
+end
+
+always @(*)
+begin
+case({y[1],y[0],y[-1]})
+3'b000:
+begin
+t1=0;
+end
+3'b001:
+begin
+t1=1;
+end
+3'b010:
+begin
+t1=1;
+end
+3'b011:
+begin
+t1=2;
+end
+3'b100:
+begin
+t1=-2;
+end
+3'b101:
+begin
+t1=-1;
+end
+3'b110:
+begin
+t1=-1;
+end
+3'b111:
+begin
+t1=0;
+end
+endcase 
+
+case({y[3],y[2],y[1]})
+3'b000:
+begin
+t2=0;
+end
+3'b001:
+begin
+t2=1;
+end
+3'b010:
+begin
+t2=1;
+end
+3'b011:
+begin
+t2=2;
+end
+3'b100:
+begin
+t2=-2;
+end
+3'b101:
+begin
+t2=-1;
+end
+3'b110:
+begin
+t2=-1;
+end
+3'b111:
+begin
+t2=0;
+end
+endcase
+
+case({y[5],y[4],y[3]})
+3'b000:
+begin
+t3=0;
+end
+3'b001:
+begin
+t3=1;
+end
+3'b010:
+begin
+t3=1;
+end
+3'b011:
+begin
+t3=2;
+end
+3'b100:
+begin
+t3=-2;
+end
+3'b101:
+begin
+t3=-1;
+end
+3'b110:
+begin
+t3=-1;
+end
+3'b111:
+begin
+t3=0;
+end
+endcase
+
+case({y[7],y[6],y[5]})
+3'b000:
+begin
+t4=0;
+end
+3'b001:
+begin
+t4=1;
+end
+3'b010:
+begin
+t4=1;
+end
+3'b011:
+begin
+t4=2;
+end
+3'b100:
+begin
+t4=-2;
+end
+3'b101:
+begin
+t4=-1;
+end
+3'b110:
+begin
+t4=-1;
+end
+3'b111:
+begin
+t4=0;
+end
+endcase
+
+
+case({y[9],y[8],y[7]})
+3'b000:
+begin
+t5=0;
+end
+3'b001:
+begin
+t5=1;
+end
+3'b010:
+begin
+t5=1;
+end
+3'b011:
+begin
+t5=2;
+end
+3'b100:
+begin
+t5=-2;
+end
+3'b101:
+begin
+t5=-1;
+end
+3'b110:
+begin
+t5=-1;
+end
+3'b111:
+begin
+t5=0;
+end
+endcase
+
+
+
+
+case({y[11],y[10],y[9]})
+3'b000:
+begin
+t6=0;
+end
+3'b001:
+begin
+t6=1;
+end
+3'b010:
+begin
+t6=1;
+end
+3'b011:
+begin
+t6=2;
+end
+3'b100:
+begin
+t6=-2;
+end
+3'b101:
+begin
+t6=-1;
+end
+3'b110:
+begin
+t6=-1;
+end
+3'b111:
+begin
+t6=0;
+end
+endcase
+
+
+
+
+case({y[13],y[12],y[11]})
+3'b000:
+begin
+t7=0;
+end
+3'b001:
+begin
+t7=1;
+end
+3'b010:
+begin
+t7=1;
+end
+3'b011:
+begin
+t7=2;
+end
+3'b100:
+begin
+t7=-2;
+end
+3'b101:
+begin
+t7=-1;
+end
+3'b110:
+begin
+t7=-1;
+end
+3'b111:
+begin
+t7=0;
+end
+endcase
+
+
+
+
+
+case({y[15],y[14],y[13]})
+3'b000:
+begin
+t8=0;
+end
+3'b001:
+begin
+t8=1;
+end
+3'b010:
+begin
+t8=1;
+end
+3'b011:
+begin
+t8=2;
+end
+3'b100:
+begin
+t8=-2;
+end
+3'b101:
+begin
+t8=-1;
+end
+3'b110:
+begin
+t8=-1;
+end
+3'b111:
+begin
+t8=0;
+end
+endcase
+
+
+
+end
+
+always @(*)
+begin
+u[0]=x[0];
+u[1]=x[1];
+u[2]=x[2];
+u[3]=x[3];
+u[4]=x[4];
+u[5]=x[5];
+u[6]=x[6];
+u[7]=x[7];
+
+u[8]=x[8];
+u[9]=x[9];
+u[10]=x[10];
+u[11]=x[11];
+u[12]=x[12];
+u[13]=x[13];
+u[14]=x[14];
+u[15]=x[15];
+
+
+
+if(t1==0)
+begin
+pp1=0;
+end
+else if(t1==1)
+begin
+pp1=u;
+end
+else if(t1==-1)
+begin
+pp1=-u;
+end
+else if(t1==2)
+begin 
+pp1=2*u;
+end
+else if(t1==-2)
+begin
+pp1=-2*u;
+end
+
+if(t2==0)
+begin
+pp2=0;
+end
+else if(t2==1)
+begin
+pp2=u;
+end
+else if(t2==-1)
+begin
+pp2=-u;
+end
+else if(t2==2)
+begin
+pp2=2*u;
+end
+else if(t2==-2)
+begin
+pp2=-2*u;
+end
+
+if(t3==0)
+begin
+pp3=0;
+end
+else if(t3==1)
+begin
+pp3=u;
+end
+else if(t3==-1)
+begin
+pp3=-u;
+end
+else if(t3==2)
+begin
+pp3=2*u;
+end
+else if(t3==-2)
+begin
+pp3=-2*u;
+end
+
+if(t4==0)
+begin
+pp4=0;
+end
+else if(t4==1)
+begin
+pp4=u;
+end
+else if(t4==-1)
+begin
+pp4=-u;
+end
+else if(t4==2)
+begin
+pp4=2*u;
+end
+else if(t4==-2)
+begin
+pp4=-2*u;
+end
+
+if(t5==0)
+begin
+pp5=0;
+end
+else if(t5==1)
+begin
+pp5=u;
+end
+else if(t5==-1)
+begin
+pp5=-u;
+end
+else if(t5==2)
+begin
+pp5=2*u;
+end
+else if(t5==-2)
+begin
+pp5=-2*u;
+end
+
+
+if(t6==0)
+begin
+pp6=0;
+end
+else if(t6==1)
+begin
+pp6=u;
+end
+else if(t6==-1)
+begin
+pp6=-u;
+end
+else if(t6==2)
+begin
+pp6=2*u;
+end
+else if(t6==-2)
+begin
+pp6=-2*u;
+end
+
+
+if(t7==0)
+begin
+pp7=0;
+end
+else if(t7==1)
+begin
+pp7=u;
+end
+else if(t7==-1)
+begin
+pp7=-u;
+end
+else if(t7==2)
+begin
+pp7=2*u;
+end
+else if(t7==-2)
+begin
+pp7=-2*u;
+end
+
+
+if(t8==0)
+begin
+pp8=0;
+end
+else if(t8==1)
+begin
+pp8=u;
+end
+else if(t8==-1)
+begin
+pp8=-u;
+end
+else if(t8==2)
+begin
+pp8=2*u;
+end
+else if(t8==-2)
+begin
+pp8=-2*u;
+end
+
+
+
+end
+
+always @(*)
+begin
+shift1=pp2<<2;
+shift2=pp3<<4;
+shift3=pp4<<6;
+shift4=pp5<<8;
+shift5=pp6<<10;
+shift6=pp7<<12;
+shift7=pp8<<14;
+
+
+
+
+z=pp1+shift1+shift2+shift3+shift4+shift5+shift6+shift7;
+end
+
+endmodule
